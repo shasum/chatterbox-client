@@ -62,7 +62,7 @@ form input[type=text] {
 .chat {
     padding: 5px;
     margin-bottom: 5px;
-    background-color: #eee;
+    background-color: white;
 }
 
 .chat .username {
@@ -71,6 +71,12 @@ form input[type=text] {
 
 .chat:hover {
     background-color: #ddd;
+}
+
+.message {
+    background-color: #eee;
+    padding: 5px;
+    margin-bottom: 5px;
 }
 
 .spinner {
