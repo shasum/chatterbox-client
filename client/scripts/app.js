@@ -3,6 +3,22 @@ var userName = window.prompt("Please enter your username");
 
 var $chatFeed = $('.chat');
 var recentMessageId;
+var rooms = [];
+
+// checks for new rooms, appends new rooms to html
+var updateRooms = function(room) {
+  if (room === undefined || room === null || room.trim() === '') {
+    return;
+  }
+  room = room.trim();
+  if (rooms.indexOf(room) < 0) {
+    rooms.push(room);
+    $('.room-menu').append($('<option>', {
+      value: _.escape(room),
+      text: '' + _.escape(room)
+    }));
+  }
+};
 
 var displayMessages = function(data) {
   console.log(data);
@@ -23,6 +39,7 @@ var displayMessages = function(data) {
   // add messages to document in reverse chronological order
   for (i = 0; i < messages.length; i++) {
     message = messages[i];
+    updateRooms(message.roomname);
     var $date = ($.format.date(message.createdAt, 'MMM d h:mm:ss p'));  // display in local time
     var $newMessage = $('<div class="message"></div>');
     $newMessage.html(
@@ -73,4 +90,13 @@ $('.submit-btn').on('click', function(event){
   });
   // immediately updates feed upon submit click
   getMessages();
+});
+
+// filter messages by room
+var filterMessagesByRoom = function() {
+};
+
+$('.room-menu').change(function() {
+  var selectedRoom = $(this).val();
+
 });
