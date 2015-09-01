@@ -7,10 +7,6 @@ var rooms = [];
 
 // checks for new rooms, appends new rooms to html
 var updateRooms = function(room) {
-  if (room === undefined || room === null || room.trim() === '') {
-    return;
-  }
-  room = room.trim();
   if (rooms.indexOf(room) < 0) {
     rooms.push(room);
     $('.room-menu').append($('<option>', {
@@ -39,9 +35,18 @@ var displayMessages = function(data) {
   // add messages to document in reverse chronological order
   for (i = 0; i < messages.length; i++) {
     message = messages[i];
-    updateRooms(message.roomname);
+    var roomName = message.roomname;
+
+    roomName = (roomName === undefined || roomName === null || roomName.trim() === '') ?
+                'default' :
+                roomName.trim();
+
+    updateRooms(roomName);
+
     var $date = ($.format.date(message.createdAt, 'MMM d h:mm:ss p'));  // display in local time
-    var $newMessage = $('<div class="message"></div>');
+
+    var $newMessage = $('<div class="message" data-roomname="' +
+                        _.escape(roomName) + '"></div>');
     $newMessage.html(
       '<div class="message-date">' + $date +
       '</div><div class="username">' + _.escape(message.username) +
@@ -93,10 +98,17 @@ $('.submit-btn').on('click', function(event){
 });
 
 // filter messages by room
-var filterMessagesByRoom = function() {
+var filterMessagesByRoom = function(roomName) {
+  $('.message').each(function(){
+    if ($(this).data('roomname') === roomName) {
+      $(this).show();
+    } else {
+      $(this).hide();
+    }
+  });
 };
 
 $('.room-menu').change(function() {
   var selectedRoom = $(this).val();
-
+  filterMessagesByRoom(selectedRoom);
 });
