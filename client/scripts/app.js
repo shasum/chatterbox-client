@@ -54,9 +54,9 @@ var displayMessages = function(data) {
       '</div><div class="username"><a href="#" class="username-link">' +
       _.escape(message.username) + '</a></div><div class="message-text">' +
       _.escape(message.text) + '</div>');
-    // if (friends.indexOf($newMessage.find('.username-link').text()) >= 0) {
-    //   $newMessage.addClass('friend');
-    // }
+    if (friends.indexOf($newMessage.find('.username-link').text()) >= 0) {
+      $newMessage.addClass('friend');
+    }
     $newMessage.prependTo($chatFeed);
     recentMessageId = message.objectId;
   }
