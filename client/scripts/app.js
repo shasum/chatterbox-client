@@ -13,7 +13,6 @@ var displayMessages = function(data) {
   // Eliminate previously displayed messages
   if (recentMessageId !== undefined) {
     for (i = 0; i < messages.length; i++) {
-      console.log('i = ',i);
       if (messages[i].objectId === recentMessageId) {
         messages.splice(0, i+1);
         break;
@@ -24,7 +23,7 @@ var displayMessages = function(data) {
   // add messages to document in reverse chronological order
   for (i = 0; i < messages.length; i++) {
     message = messages[i];
-    var $date = ($.format.date(message.createdAt, 'MMM d h:mm:ss p'));
+    var $date = ($.format.date(message.createdAt, 'MMM d h:mm:ss p'));  // display in local time
     var $newMessage = $('<div class="message"></div>');
     $newMessage.html(
       '<div class="message-date">' + $date +
@@ -34,7 +33,6 @@ var displayMessages = function(data) {
     recentMessageId = message.objectId;
   }
 };
-
 
 var errorHandler = function() {
   console.error('error');
@@ -58,5 +56,21 @@ setInterval(getMessages, 1000);
 $('.submit-btn').on('click', function(event){
   event.preventDefault();
   var $textInput = $(this).closest('form').find('textarea');
-  console.log($textInput.val());
+  var message = {
+    username: userName,
+    text: $textInput.val(),
+    roomname: 'default'
+  };
+  $.ajax({
+    url: 'https://api.parse.com/1/classes/chatterbox',
+    type: 'POST',
+    data: JSON.stringify(message),
+    contentType: 'application/JSON',
+    success: function() {
+      console.log('message sent');
+    },
+    error: errorHandler
+  });
+  // immediately updates feed upon submit click
+  getMessages();
 });
