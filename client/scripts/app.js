@@ -4,6 +4,8 @@ var userName = window.prompt("Please enter your username");
 var $chatFeed = $('.chat');
 var recentMessageId;
 var rooms = [];
+var selectedRoom = 'All';
+var friends = [];
 
 // checks for new rooms, appends new rooms to html
 var updateRooms = function(room) {
@@ -49,8 +51,12 @@ var displayMessages = function(data) {
                         _.escape(roomName) + '"></div>');
     $newMessage.html(
       '<div class="message-date">' + $date +
-      '</div><div class="username">' + _.escape(message.username) +
-      '</div><div class="message-text">' + _.escape(message.text) + '</div>');
+      '</div><div class="username"><a href="#" class="username-link">' +
+      _.escape(message.username) + '</a></div><div class="message-text">' +
+      _.escape(message.text) + '</div>');
+    // if (friends.indexOf($newMessage.find('.username-link').text()) >= 0) {
+    //   $newMessage.addClass('friend');
+    // }
     $newMessage.prependTo($chatFeed);
     recentMessageId = message.objectId;
   }
@@ -81,7 +87,7 @@ $('.submit-btn').on('click', function(event){
   var message = {
     username: userName,
     text: $textInput.val(),
-    roomname: 'default'
+    roomname: selectedRoom
   };
   $.ajax({
     url: 'https://api.parse.com/1/classes/chatterbox',
@@ -100,7 +106,7 @@ $('.submit-btn').on('click', function(event){
 // filter messages by room
 var filterMessagesByRoom = function(roomName) {
   $('.message').each(function(){
-    if ($(this).data('roomname') === roomName) {
+    if ((roomName === 'All') || ($(this).data('roomname') === roomName)) {
       $(this).show();
     } else {
       $(this).hide();
@@ -109,6 +115,34 @@ var filterMessagesByRoom = function(roomName) {
 };
 
 $('.room-menu').change(function() {
-  var selectedRoom = $(this).val();
-  filterMessagesByRoom(selectedRoom);
+  selectedRoom = $(this).val();
+
+  if (selectedRoom === 'add-room') {
+    selectedRoom = window.prompt("Please enter new room name");
+    updateRooms(selectedRoom);
+    $('.rooms select').val('' + _.escape(selectedRoom));
+  }
+
+  filterMessagesByRoom(_.escape(selectedRoom));
+});
+
+var highlightFriendsMessages = function() {
+  $('.message').each(function(){
+    if (friends.indexOf($(this).find('.username-link').text()) >= 0) {
+      $(this).addClass('friend');
+    } else {
+      $(this).removeClass('friend');
+    }
+  });
+};
+
+$(document).on('click', '.username-link', function(event) {
+  event.preventDefault();
+  var newFriend = $(this).text();
+  if (friends.indexOf(newFriend) < 0) {
+    friends.push(newFriend);
+  } else {
+    friends.splice(friends.indexOf(newFriend), 1);
+  }
+  highlightFriendsMessages();
 });

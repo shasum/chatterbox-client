@@ -79,6 +79,10 @@ form input[type=text] {
     margin-bottom: 5px;
 }
 
+.friend {
+    border: 1px red solid;
+}
+
 .spinner {
     float: right;
     height: 46px;
